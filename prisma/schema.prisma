@@ -3,11 +3,17 @@
 
 generator client {
   provider = "prisma-client-js"
+
+  // PlanetScale(서버리스 database 플랫폼)은 mysql 호환이지만 vitess를 사용하기 때문에 foreign key 기능이 없다.
+  // 따라서 안전하게 foreign key 기능(참조키가 존재하는지 확인하는 기능)을 prisma가 대신해주기 위해 아래 코드가 필요함.
+  previewFeatures = ["referentialIntegrity"] // 참조 무결성
 }
 
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+  // foreign key기능을 prisma가 하겠다는 코드.
+  referentialIntegrity = "prisma"
 }
 
 model User {
