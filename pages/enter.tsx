@@ -19,7 +19,12 @@ const Enter: NextPage = () => {
     setMethod(method);
   };
   const onValid = (data: EnterForm) => {
-    console.log(data);
+    fetch("/api/users/enter", {
+      method: "POST",
+      body: JSON.stringify(data),
+      // Content-Type 지정해줘야 api에서 req.body.email 형식으로 값 꺼낼 수 있음.
+      headers: { "Content-Type": "application/json" },
+    });
   };
   return (
     <div className="mt-16 px-4">
