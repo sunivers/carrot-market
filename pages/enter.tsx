@@ -3,7 +3,8 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import Button from "../components/button";
 import Input from "../components/input";
-import { cls } from "../libs/utils";
+import useMutation from "../libs/client/useMutation";
+import { cls } from "../libs/client/utils";
 
 interface EnterForm {
   email?: string;
@@ -12,6 +13,7 @@ interface EnterForm {
 type Method = "email" | "phone";
 
 const Enter: NextPage = () => {
+  const [enter, { loading, data, error }] = useMutation("/api/users/enter");
   const { register, handleSubmit, reset } = useForm<EnterForm>();
   const [method, setMethod] = useState<Method>("email");
   const onChangeMethod = (method: Method) => {
@@ -19,13 +21,9 @@ const Enter: NextPage = () => {
     setMethod(method);
   };
   const onValid = (data: EnterForm) => {
-    fetch("/api/users/enter", {
-      method: "POST",
-      body: JSON.stringify(data),
-      // Content-Type 지정해줘야 api에서 req.body.email 형식으로 값 꺼낼 수 있음.
-      headers: { "Content-Type": "application/json" },
-    });
+    enter(data);
   };
+  console.log(loading, data, error);
   return (
     <div className="mt-16 px-4">
       <h3 className="text-3xl font-bold text-center">Enter to Carrot</h3>
