@@ -1,10 +1,15 @@
 import { NextApiRequest, NextApiResponse } from "next";
-import withHandler from "@libs/server/withHandlers";
+import withHandler, { ResponseType } from "@libs/server/withHandlers";
 import client from "@libs/server/client";
 
-async function handler(req: NextApiRequest, res: NextApiResponse) {
+async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<ResponseType>
+) {
   const { email, phone } = req.body;
-  const user = email ? { email } : { phone: +phone };
+  const user = email ? { email } : phone ? { phone: +phone } : null;
+  if (!user) return res.status(400).json({ ok: false });
+
   const payload = `${Math.floor(100000 + Math.random() * 900000)}`;
   const token = await client.token.create({
     data: {
@@ -28,8 +33,9 @@ async function handler(req: NextApiRequest, res: NextApiResponse) {
       },
     },
   });
-  console.log(token);
-  res.status(200).end();
+  res.json({
+    ok: true,
+  });
 }
 
 // NextJS에서 api를 실행시키려면 반드시 함수를 반환해야함 (withHandler 내부 구현을 보면 function을 반환하고 있음)
