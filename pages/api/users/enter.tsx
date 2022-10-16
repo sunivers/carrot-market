@@ -4,18 +4,31 @@ import client from "@libs/server/client";
 
 async function handler(req: NextApiRequest, res: NextApiResponse) {
   const { email, phone } = req.body;
-  const payload = email ? { email } : { phone: +phone };
-  const user = await client.user.upsert({
-    where: {
-      ...payload,
+  const user = email ? { email } : { phone: +phone };
+  const payload = `${Math.floor(100000 + Math.random() * 900000)}`;
+  const token = await client.token.create({
+    data: {
+      payload,
+      user: {
+        // 토큰 생성시 user도 새로 생성하려면 create
+        // 존재하는 user 객체와 연결한다면 connect
+        // user 있으면 connect, 없으면 생성하려면 connectOrCreate
+        // connect: {
+        //   id: user.id,
+        // },
+        connectOrCreate: {
+          where: {
+            ...user,
+          },
+          create: {
+            name: "Anonymous",
+            ...user,
+          },
+        },
+      },
     },
-    create: {
-      name: "Anonymous",
-      ...payload,
-    },
-    update: {},
   });
-  console.log(user);
+  console.log(token);
   res.status(200).end();
 }
 
