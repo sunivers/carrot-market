@@ -8,19 +8,27 @@ async function handler(
   res: NextApiResponse<ResponseType>
 ) {
   const { token } = req.body;
-  const exists = await client.token.findUnique({
+  const foundToken = await client.token.findUnique({
     where: {
       payload: token,
     },
     include: { user: true }, // include를 이용해 foreign key로 연결된 관계 객체를 가져올 수 있음
   });
 
-  if (!exists) return res.status(404).end();
+  if (!foundToken) return res.status(404).end();
 
+  // 세션 저장
   req.session.user = {
-    id: exists.userId,
+    id: foundToken.userId,
   };
   await req.session.save();
+
+  // 토큰 삭제
+  await client.token.deleteMany({
+    where: {
+      userId: foundToken.userId,
+    },
+  });
 
   res.json({ ok: true });
 }
