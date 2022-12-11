@@ -4,6 +4,8 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "db:start": "pscale connect carrot-market --port 53198",
+    "studio": "npx prisma studio",
     "build": "next build",
     "start": "next start",
     "lint": "next lint"
