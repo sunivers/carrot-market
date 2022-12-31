@@ -25,8 +25,8 @@ model User {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   tokens    Token[]
-  Product   Product[]
-  Favorite  Favorite[]
+  product   Product[]
+  favorite  Favorite[]
 }
 
 model Token {
@@ -48,7 +48,7 @@ model Product {
   name        String
   price       Int
   description String     @db.MediumText
-  Favorite    Favorite[]
+  favorite    Favorite[]
 }
 
 model Favorite {
