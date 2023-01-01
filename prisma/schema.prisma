@@ -25,10 +25,10 @@ model User {
   createdAt DateTime   @default(now())
   updatedAt DateTime   @updatedAt
   tokens    Token[]
-  product   Product[]
+  products  Product[]
   favorite  Favorite[]
-  post      Post[]
-  answer    Answer[]
+  posts     Post[]
+  answers   Answer[]
   interest  Interest[]
 }
 
@@ -71,7 +71,7 @@ model Post {
   user      User       @relation(fields: [userId], references: [id], onDelete: Cascade)
   userId    Int
   question  String     @db.MediumText
-  answer    Answer[]
+  answers   Answer[]
   interest  Interest[]
 }
 
