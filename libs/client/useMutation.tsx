@@ -13,6 +13,8 @@ export default function useMutation<T>(url: string): UseMutaionResult<T> {
     loading: false,
   });
   function mutation(data: any): any {
+    if (!url) return;
+
     setState({
       loading: true,
     });

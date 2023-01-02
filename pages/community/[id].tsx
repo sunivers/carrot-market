@@ -5,6 +5,8 @@ import { useRouter } from "next/router";
 import useSWR from "swr";
 import { Answer, Post, User } from "@prisma/client";
 import Link from "next/link";
+import useMutation from "@libs/client/useMutation";
+import { cls } from "@libs/client/utils";
 
 interface AnswerWithUser extends Answer {
   user: User;
@@ -22,13 +24,40 @@ interface PostWithOthers extends Post {
 interface PostResponse {
   ok: boolean;
   post: PostWithOthers;
+  isInterest: boolean;
 }
 
 const CommunityPostDetail: NextPage = () => {
   const router = useRouter();
-  const { data } = useSWR<PostResponse>(
+  const { data, mutate } = useSWR<PostResponse>(
     router.query.id && `/api/posts/${router.query.id}`
   );
+
+  const [toggleInterest] = useMutation(
+    router.query.id ? `/api/posts/${router.query.id}/interest` : ""
+  );
+  const onClickInterest = () => {
+    if (!data) return;
+
+    mutate(
+      {
+        ...data,
+        post: {
+          ...data.post,
+          _count: {
+            ...data.post._count,
+            interest: data.isInterest
+              ? data.post._count.interest - 1
+              : data.post._count.interest + 1,
+          },
+        },
+        isInterest: !data.isInterest,
+      },
+      false
+    );
+    toggleInterest({});
+  };
+
   return (
     <Layout canGoBack>
       <div>
@@ -53,8 +82,16 @@ const CommunityPostDetail: NextPage = () => {
             <span className="text-orange-500 font-medium">Q.</span>{" "}
             {data?.post.question}
           </div>
-          <div className="flex px-4 space-x-5 mt-3 text-gray-700 py-2.5 border-t border-b-[2px]  w-full">
-            <span className="flex space-x-2 items-center text-sm">
+          <div className="flex px-4 space-x-5 mt-3 py-2.5 border-t border-b-[2px]  w-full">
+            <button
+              onClick={onClickInterest}
+              className={cls(
+                "flex space-x-2 items-center text-sm ",
+                data?.isInterest
+                  ? "font-medium text-green-600"
+                  : "text-gray-700"
+              )}
+            >
               <svg
                 className="w-4 h-4"
                 fill="none"
@@ -70,7 +107,7 @@ const CommunityPostDetail: NextPage = () => {
                 ></path>
               </svg>
               <span>궁금해요 {data?.post._count.interest}</span>
-            </span>
+            </button>
             <span className="flex space-x-2 items-center text-sm">
               <svg
                 className="w-4 h-4"
