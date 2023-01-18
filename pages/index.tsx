@@ -6,7 +6,7 @@ import Layout from "@components/layout";
 import useUser from "@libs/client/useUser";
 import { Product } from "@prisma/client";
 
-interface ProductWithFavCount extends Product {
+export interface ProductWithFavCount extends Product {
   _count: {
     favorite: number;
   };
