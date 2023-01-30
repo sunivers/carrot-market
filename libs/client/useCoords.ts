@@ -14,9 +14,11 @@ const useCoords = () => {
   const onSuccess = ({
     coords: { latitude, longitude },
   }: GeolocationPosition) => {
+    console.timeEnd("getCurrentPosition");
     setCoords({ latitude, longitude });
   };
   useEffect(() => {
+    console.time("getCurrentPosition");
     window.navigator.geolocation.getCurrentPosition(onSuccess);
   }, []);
 
