@@ -24,6 +24,18 @@ async function handler(
           avatar: true,
         },
       },
+      messages: {
+        select: {
+          id: true,
+          message: true,
+          user: {
+            select: {
+              id: true,
+              avatar: true,
+            },
+          },
+        },
+      },
     },
   });
 
